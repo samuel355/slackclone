@@ -1,5 +1,6 @@
 "use client";
 
+import { registerWithEmail } from "@/actions/registerWithEmail";
 import { Button } from "@/components/ui/button";
 import {
   Form,
@@ -10,7 +11,9 @@ import {
 } from "@/components/ui/form";
 import { Input } from "@/components/ui/input";
 import Typography from "@/components/ui/typography";
+import { supabaseClient } from "@/supabase/supabaseClient";
 import { zodResolver } from "@hookform/resolvers/zod";
+import { Provider } from "@supabase/supabase-js";
 import React, { useState } from "react";
 import { useForm } from "react-hook-form";
 import { BsSlack } from "react-icons/bs";
@@ -36,7 +39,31 @@ const AuthPage = () => {
   });
 
   async function onSubmit(values: z.infer<typeof formSchema>) {
-    console.log(values);
+    setIsAuthenticating(true);
+    const response = await registerWithEmail(values);
+    const {data, error} = JSON.parse(response)
+    if(error){
+      console.error("Sign in error: ", error)
+      setIsAuthenticating(false);
+      return
+    }
+    if(data){
+      console.log("Signed in successfully: ", data)
+      setIsAuthenticating(false);
+      return
+    }
+    setIsAuthenticating(false);
+  }
+
+  async function socialAuth(provider: Provider) {
+    setIsAuthenticating(true);
+    await supabaseClient.auth.signInWithOAuth({
+      provider,
+      options: {
+        redirectTo: `${location.origin}/auth/callback`,
+      },
+    });
+    setIsAuthenticating(false);
   }
 
   return (
@@ -49,7 +76,7 @@ const AuthPage = () => {
         <Typography
           text="Sign in to your Slack"
           variant="h2"
-          className="mb-3"
+          className="mb-3 text-center"
         />
         <Typography
           text="we suggest using the email address that you use at work"
@@ -58,6 +85,7 @@ const AuthPage = () => {
         />
         <div className="flex flex-col space-y-4">
           <Button
+            onClick={() => socialAuth("google")}
             disabled={isAuthenticating}
             variant={"outline"}
             className="py-6 border-2 flex space-x-3"
@@ -70,6 +98,7 @@ const AuthPage = () => {
             />
           </Button>
           <Button
+            onClick={() => socialAuth("github")}
             disabled={isAuthenticating}
             variant={"outline"}
             className="py-6 border-2 flex space-x-3"
