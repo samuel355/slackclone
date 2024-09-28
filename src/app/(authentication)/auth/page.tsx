@@ -14,7 +14,8 @@ import Typography from "@/components/ui/typography";
 import { supabaseClient } from "@/supabase/supabaseClient";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { Provider } from "@supabase/supabase-js";
-import React, { useState } from "react";
+import { useRouter } from "next/navigation";
+import React, { useEffect, useState } from "react";
 import { useForm } from "react-hook-form";
 import { BsSlack } from "react-icons/bs";
 import { FcGoogle } from "react-icons/fc";
@@ -24,6 +25,30 @@ import { z } from "zod";
 
 const AuthPage = () => {
   const [isAuthenticating, setIsAuthenticating] = useState(false);
+  const [isMounted, setIsMounted] = useState(false);
+
+  const router = useRouter()
+
+  useEffect(() => {
+    const getCurrentUser = async () => {
+      const {
+        data: { session },
+        error
+      } = await supabaseClient.auth.getSession();
+      if (error) {
+        console.error("Error fetching user: ", error);
+      } else if (session) {
+        setIsMounted(true);
+      }
+      console.log('user logged in', session)
+      if(session){
+        return router.push('/')
+      }
+    };
+    getCurrentUser();
+    setIsMounted(true)
+  }, [router]);
+
   const formSchema = z.object({
     email: z
       .string()
@@ -41,16 +66,16 @@ const AuthPage = () => {
   async function onSubmit(values: z.infer<typeof formSchema>) {
     setIsAuthenticating(true);
     const response = await registerWithEmail(values);
-    const {data, error} = JSON.parse(response)
-    if(error){
-      console.error("Sign in error: ", error)
+    const { data, error } = JSON.parse(response);
+    if (error) {
+      console.error("Sign in error: ", error);
       setIsAuthenticating(false);
-      return
+      return;
     }
-    if(data){
-      console.log("Signed in successfully: ", data)
+    if (data) {
+      console.log("Signed in successfully: ", data);
       setIsAuthenticating(false);
-      return
+      return;
     }
     setIsAuthenticating(false);
   }
@@ -65,6 +90,8 @@ const AuthPage = () => {
     });
     setIsAuthenticating(false);
   }
+
+  if (!isMounted) return null;
 
   return (
     <div className="min-h-screen p-5 grid place-content-center bg-white ">
