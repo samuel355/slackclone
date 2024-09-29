@@ -1,10 +1,13 @@
 "use client";
+import { createWorkSpace } from "@/actions/createWorkSpace";
 import { Button } from "@/components/ui/button";
 import ImageUpload from "@/components/ui/ImageUpload";
 import { Input } from "@/components/ui/input";
 import Typography from "@/components/ui/typography";
 import { useCreateWorkspaceValues } from "@/hooks/create-workspace-values";
-import React from "react";
+import React, { useState } from "react";
+import slugify from "slugify";
+import { v4 as uuid } from "uuid";
 
 const CreateWorkSpace = () => {
   const { currentStep } = useCreateWorkspaceValues();
@@ -80,10 +83,21 @@ const Step1 = () => {
 };
 
 const Step2 = () => {
-  const { name, updateValues, setCurrentStep, updateImageUrl, imageUrl } =
+  const { name, setCurrentStep, updateImageUrl, imageUrl } =
     useCreateWorkspaceValues();
 
-  const handleSubmit = () => {};
+  const [isSubmitting, setIsSubmitting] = useState(false);
+
+  const handleSubmit = async () => {
+    setIsSubmitting(true);
+    //Creating workspace
+
+    const slug = slugify(name);
+    const invite_code = uuid();
+    const error = await createWorkSpace({ name, slug, invite_code, imageUrl });
+    setIsSubmitting(false);
+  };
+
   return (
     <>
       <Button
@@ -103,10 +117,13 @@ const Step2 = () => {
           className="text-neutral-300"
           variant="p"
         />
-        <fieldset className="mt-6 flex-col items-center space-y-9">
+        <fieldset
+          disabled={isSubmitting}
+          className="mt-6 flex-col items-center space-y-9"
+        >
           {/* image component */}
-          <div className="w-full border border-gray-300 rounded-md">
-          <ImageUpload />
+          <div className="w-full border border-gray-300 rounded-md p-4">
+            <ImageUpload />
           </div>
           <div className="space-x-5">
             <Button
@@ -129,7 +146,11 @@ const Step2 = () => {
                 <Typography text="Submit" variant="p" />
               </Button>
             ) : (
-              <Button size={"sm"} className="text-white bg-gray-500">
+              <Button
+                type="button"
+                size={"sm"}
+                className="text-white bg-gray-500"
+              >
                 {" "}
                 <Typography text="Select an Image" variant="p" />{" "}
               </Button>
