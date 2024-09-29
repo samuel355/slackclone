@@ -1,8 +1,8 @@
-import { subaseServerClient } from "@/supabase/supabaseServer";
+import { supabaseServerClient } from "@/supabase/supabaseServer";
 import { User } from "@/types/app";
 
 export const getUserData = async (): Promise<User | null> => {
-  const supabase = await subaseServerClient();
+  const supabase = await supabaseServerClient();
   const { data: { user } } = await supabase.auth.getUser();
 
   if (!user) {

@@ -1,10 +1,10 @@
 'use server'
 
-import { subaseServerClient } from "@/supabase/supabaseServer"
+import { supabaseServerClient } from "@/supabase/supabaseServer"
 
 
 export async function registerWithEmail({email}:{email: string}){
-  const supabase = await subaseServerClient();
+  const supabase = await supabaseServerClient();
   const response = await supabase.auth.signInWithOtp({
     email,
     options: {
