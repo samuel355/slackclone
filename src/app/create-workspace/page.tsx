@@ -1,5 +1,6 @@
 "use client";
 import { Button } from "@/components/ui/button";
+import ImageUpload from "@/components/ui/ImageUpload";
 import { Input } from "@/components/ui/input";
 import Typography from "@/components/ui/typography";
 import { useCreateWorkspaceValues } from "@/hooks/create-workspace-values";
@@ -104,6 +105,9 @@ const Step2 = () => {
         />
         <fieldset className="mt-6 flex-col items-center space-y-9">
           {/* image component */}
+          <div className="w-full border border-gray-300 rounded-md">
+          <ImageUpload />
+          </div>
           <div className="space-x-5">
             <Button
               onClick={() => {
