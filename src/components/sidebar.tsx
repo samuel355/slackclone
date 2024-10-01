@@ -9,11 +9,18 @@ import Image from "next/image";
 import { cn } from "@/lib/utils";
 import { useColorPreferences } from "@/providers/ColorPreferences";
 import { useTheme } from "next-themes";
-import { Tooltip, TooltipProvider, TooltipTrigger } from "./ui/tooltip";
+import { IoDiamondOutline } from "react-icons/io5";
+import {
+  Tooltip,
+  TooltipContent,
+  TooltipProvider,
+  TooltipTrigger,
+} from "./ui/tooltip";
 import { Popover, PopoverContent, PopoverTrigger } from "./ui/popover";
 import SidebarNav from "./sidebar-nav";
 import { Avatar, AvatarFallback, AvatarImage } from "./ui/avatar";
 import Typography from "./ui/typography";
+import { FaRegCalendarCheck, FaPencil } from "react-icons/fa6";
 
 type SidebarProps = {
   userWorkspacesData: Workspace[];
@@ -94,7 +101,7 @@ const Sidebar: FC<SidebarProps> = ({
                         </Avatar>
                         <div className="flex-col flex">
                           <Typography
-                            text={userData.name || ""}
+                            text={userData.name || userData.email}
                             variant="p"
                             className="font-bold"
                           />
@@ -111,11 +118,64 @@ const Sidebar: FC<SidebarProps> = ({
                           </div>
                         </div>
                       </div>
+
+                      <div className="border group cursor-pointer mt-4 mb-2 p-1 rounded flex items-center space-x-2">
+                        <FaRegCalendarCheck className="group-hover:hidden" />
+                        <FaPencil className="hidden group-hover:block" />
+                        <Typography
+                          text={"In a meeting"}
+                          variant="p"
+                          className="text-xs text-gray-600"
+                        />
+                      </div>
+
+                      <div className="flex flex-col space-y-1">
+                        <Typography
+                          variant="p"
+                          className="hover:text-white hover:bg-blue-700 px-2 py-1 rounded cursor-pointer"
+                          text={
+                            userData.is_away
+                              ? "Set yourself as active"
+                              : "Set yourself as away"
+                          }
+                        />
+                        <Typography
+                          variant="p"
+                          className="hover:text-white hover:bg-blue-700 px-2 py-1 rounded cursor-pointer"
+                          text="Clear Status"
+                        />
+                        <hr className="bg-gray-400" />
+                        <Typography
+                          variant="p"
+                          className="hover:text-white hover:bg-blue-700 px-2 py-1 rounded cursor-pointer"
+                          text="Profile"
+                        />
+                        {/* Preferences */}
+                        <hr className="bg-gray-400" />
+                        <div className="flex gap-2 items-center hover:text-white hover:bg-blue-700 px-2 py-1 rounded cursor-pointer">
+                          <IoDiamondOutline className="text-orange-400" />
+                          <Typography
+                            variant="p"
+                            text={`Upgrade ${currentWorkspaceData.name}`}
+                          />
+                        </div>
+                        <Typography
+                          variant="p"
+                          text={`Sign out of ${currentWorkspaceData.name}`}
+                          className=" hover:text-white hover:bg-blue-700 px-2 py-1 rounded cursor-pointer"
+                        />
+                      </div>
                     </div>
                   </PopoverContent>
                 </Popover>
               </div>
             </TooltipTrigger>
+            <TooltipContent
+              className="text-white bg-black border-black"
+              side="right"
+            >
+              <Typography text={userData.name || userData.email} variant="p" />
+            </TooltipContent>
           </Tooltip>
         </TooltipProvider>
       </div>
