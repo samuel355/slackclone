@@ -6,7 +6,7 @@ import React, { FC, ReactNode } from "react";
 
 const MainContent: FC<{ children: ReactNode }> = ({ children }) => {
   const { theme } = useTheme();
-  const { color, selectColor } = useColorPreferences();
+  const { color } = useColorPreferences();
 
   let backGroundColor = "bg-primary-dark";
 
