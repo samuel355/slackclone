@@ -3,6 +3,7 @@ import {
   getCurrentWorkspaceData,
   getUserWorkspaceData,
 } from "@/actions/WorkSpaces";
+import InfoSection from "@/components/info-section";
 import Sidebar from "@/components/sidebar";
 import Typography from "@/components/ui/typography";
 import { Workspace as UserWorkspace } from "@/types/app";
@@ -28,6 +29,26 @@ const Workspace = async ({ params: { id } }: { params: { id: string } }) => {
           userData={userData}
           userWorkspacesData={userWorkspacesData as UserWorkspace[]}
         />
+        <InfoSection />
+        Workspace
+        <Typography text="Here we to again" variant="p" />
+        <Typography text="Here we to again" variant="p" />
+        <Typography text="Here we to again" variant="p" />
+        <Typography text="Here we to again" variant="p" />
+        <Typography text="Here we to again" variant="p" />
+        <Typography text="Here we to again" variant="p" />
+        <Typography text="Here we to again" variant="p" />
+        <Typography text="Here we to again" variant="p" />
+        <Typography text="Here we to again" variant="p" />
+        <Typography text="Here we to again" variant="p" />
+        <Typography text="Here we to again" variant="p" />
+        <Typography text="Here we to again" variant="p" />
+        <Typography text="Here we to again" variant="p" />
+        <Typography text="Here we to again" variant="p" />
+        <Typography text="Here we to again" variant="p" />
+        <Typography text="Here we to again" variant="p" />
+        <Typography text="Here we to again" variant="p" />
+        <Typography text="Here we to again" variant="p" />
       </div>
       <div className="md:hidden block min-h-screen">Mobile</div>
     </>
