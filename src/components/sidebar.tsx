@@ -21,6 +21,7 @@ import SidebarNav from "./sidebar-nav";
 import { Avatar, AvatarFallback, AvatarImage } from "./ui/avatar";
 import Typography from "./ui/typography";
 import { FaRegCalendarCheck, FaPencil } from "react-icons/fa6";
+import PreferencesDialog from "./preferences-dialog";
 
 type SidebarProps = {
   userWorkspacesData: Workspace[];
@@ -150,7 +151,9 @@ const Sidebar: FC<SidebarProps> = ({
                           className="hover:text-white hover:bg-blue-700 px-2 py-1 rounded cursor-pointer"
                           text="Profile"
                         />
-                        {/* Preferences */}
+                        
+                        <PreferencesDialog />
+                        
                         <hr className="bg-gray-400" />
                         <div className="flex gap-2 items-center hover:text-white hover:bg-blue-700 px-2 py-1 rounded cursor-pointer">
                           <IoDiamondOutline className="text-orange-400" />
