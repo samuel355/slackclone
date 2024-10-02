@@ -113,7 +113,7 @@ const PreferencesDialog = () => {
                 Reset
               </Button>
             </div>
-          </TabsContent>
+          </TabsContent> 
         </Tabs>
       </DialogContent>
     </Dialog>

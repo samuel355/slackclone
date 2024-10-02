@@ -49,6 +49,21 @@ const Workspace = async ({ params: { id } }: { params: { id: string } }) => {
         <Typography text="Here we to again" variant="p" />
         <Typography text="Here we to again" variant="p" />
         <Typography text="Here we to again" variant="p" />
+        <Typography text="Here we to again" variant="p" />
+        <Typography text="Here we to again" variant="p" />
+        <Typography text="Here we to again" variant="p" />
+        <Typography text="Here we to again" variant="p" />
+        <Typography text="Here we to again" variant="p" />
+        <Typography text="Here we to again" variant="p" />
+        <Typography text="Here we to again" variant="p" />
+        <Typography text="Here we to again" variant="p" />
+        <Typography text="Here we to again" variant="p" />
+        <Typography text="Here we to again" variant="p" />
+        <Typography text="Here we to again" variant="p" />
+        <Typography text="Here we to again" variant="p" />
+        <Typography text="Here we to again" variant="p" />
+        <Typography text="Here we to again" variant="p" />
+        <Typography text="Here we to again" variant="p" />
       </div>
       <div className="md:hidden block min-h-screen">Mobile</div>
     </>

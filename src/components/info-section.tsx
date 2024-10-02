@@ -16,7 +16,7 @@ const InfoSection = () => {
   return (
     <div
       className={cn(
-        "fixed left-20 rounded-l-xl md:w-52 lg:w-[350px] h-[calc(100%-64px)] z-20 flex flex-col items-center",
+        "fixed text-white left-20 rounded-l-xl md:w-52 lg:w-[350px] h-[calc(100%-64px)] z-20 flex flex-col items-center",
         backGroundColor
       )}
     >
