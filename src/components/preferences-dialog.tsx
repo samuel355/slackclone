@@ -9,6 +9,7 @@ import { HiOutlinePaintBrush } from "react-icons/hi2";
 import { cn } from "@/lib/utils";
 import { Button } from "./ui/button";
 import { MdLightMode } from "react-icons/md";
+import { BsLaptop } from "react-icons/bs";
 
 const PreferencesDialog = () => {
   const { theme, setTheme } = useTheme();
@@ -18,7 +19,7 @@ const PreferencesDialog = () => {
       <DialogTrigger asChild>
         <Typography
           className="hover:text-white hover:bg-blue-700 px-2 py-1 rounded cursor-pointer"
-          text="Preferences"
+          text="Color Preferences"
           variant="p"
         />
       </DialogTrigger>
@@ -48,12 +49,68 @@ const PreferencesDialog = () => {
             />
             <div className="flex flex-wrap gap-3">
               <Button
+                onClick={() => setTheme("light")}
+                variant={"outline"}
                 className={`w-full ${cn(
                   theme === "light" && "border-blue-600"
                 )}`}
               >
                 <MdLightMode className="mr-2" size={20} />
                 <Typography text="Light" variant="p" />
+              </Button>
+
+              <Button
+                onClick={() => setTheme("dark")}
+                variant={"outline"}
+                className={`w-full ${cn(
+                  theme === "dark" && "border-blue-600"
+                )}`}
+              >
+                <BsLaptop className="mr-2" size={20} />
+                <Typography text="Dark" variant="p" />
+              </Button>
+
+              <Button
+                onClick={() => setTheme("sytem")}
+                variant={"outline"}
+                className={`w-full ${cn(
+                  theme === "system" && "border-blue-600"
+                )}`}
+              >
+                <MdLightMode className="mr-2" size={20} />
+                <Typography text="System" variant="p" />
+              </Button>
+            </div>
+            <hr className="bg-gray-200 my-5" />
+            <Typography
+              text="Single Color"
+              variant="p"
+              className="py-2 font-bold"
+            />
+
+            <div className="flex flex-row flex-wrap gap-2">
+              <Button
+                variant={"outline"}
+                onClick={() => selectColor("green")}
+                className=" hover:border-green-800 broder-2"
+              >
+                Green
+              </Button>
+
+              <Button
+                variant={"outline"}
+                onClick={() => selectColor("blue")}
+                className=" hover:border-blue-800 broder-2"
+              >
+                Blue
+              </Button>
+
+              <Button
+                variant={"outline"}
+                onClick={() => selectColor("")}
+                className=" hover:border-red-800 broder-2"
+              >
+                Reset
               </Button>
             </div>
           </TabsContent>
