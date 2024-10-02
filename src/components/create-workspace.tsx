@@ -1,4 +1,4 @@
-import React, { FC } from "react";
+import React, { FC, useState } from "react";
 import { Button } from "./ui/button";
 import { FaPlus } from "react-icons/fa";
 import Typography from "./ui/typography";
@@ -23,8 +23,19 @@ import { zodResolver } from "@hookform/resolvers/zod";
 import { z } from "zod";
 import { Input } from "./ui/input";
 import ImageUpload from "./ui/ImageUpload";
+import slugify from "slugify";
+import { v4 as uuidv4 } from "uuid";
+import { createWorkSpace } from "@/actions/createWorkSpace";
+import { toast } from "sonner";
+import { useRouter } from "next/navigation";
+import { useCreateWorkspaceValues } from "@/hooks/create-workspace-values";
 
 const CreateWorkSpace = () => {
+  const router = useRouter();
+  const { imageUrl, updateImageUrl } = useCreateWorkspaceValues();
+  const [isDialogOpen, setIsDialogOpen] = useState(false);
+  const [isSubmitting, setIsSubmitting] = useState(false);
+
   const formSchema = z.object({
     name: z
       .string()
@@ -38,12 +49,26 @@ const CreateWorkSpace = () => {
     },
   });
 
-  async function onSubmit({name}:z.infer <typeof formSchema>) {
-    console.log(name);
+  async function onSubmit({ name }: z.infer<typeof formSchema>) {
+    setIsSubmitting(true);
+    const slug = slugify(name, { lower: true });
+    const invite_code = uuidv4();
+
+    const result = await createWorkSpace({ name, slug, invite_code, imageUrl });
+    setIsSubmitting(false);
+    if (result && result.error) {
+      console.log(result.error);
+    }
+
+    setIsDialogOpen(false);
+    router.refresh();
+    updateImageUrl("");
+    toast.success("Workspace created successfully");
+    form.reset();
   }
 
   return (
-    <Dialog>
+    <Dialog open={isDialogOpen} onOpenChange={() => setIsDialogOpen((prevValue) => !prevValue)}>
       <DialogTrigger>
         <div className="flex items-center gap-2 p-2 cursor-pointer">
           <Button variant={"secondary"}>
@@ -87,9 +112,11 @@ const CreateWorkSpace = () => {
                 )}
               />
 
-              <div className="border"><ImageUpload /></div>
+              <div className="border">
+                <ImageUpload />
+              </div>
 
-              <Button type="submit" className="w-full">
+              <Button disabled={isSubmitting} type="submit" className="w-full">
                 <Typography text="Submit" variant="p" />
               </Button>
             </form>
