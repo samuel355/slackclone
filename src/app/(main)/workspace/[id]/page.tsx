@@ -29,7 +29,10 @@ const Workspace = async ({ params: { id } }: { params: { id: string } }) => {
           userData={userData}
           userWorkspacesData={userWorkspacesData as UserWorkspace[]}
         />
-        <InfoSection />
+        <InfoSection
+          currentWorkspaceData={currentWorkspaceData}
+          userData={userData}
+        />
         Workspace
         <Typography text="Here we to again" variant="p" />
         <Typography text="Here we to again" variant="p" />

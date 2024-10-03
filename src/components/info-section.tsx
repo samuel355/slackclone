@@ -7,14 +7,20 @@ import {
   CollapsibleContent,
   CollapsibleTrigger,
 } from "./ui/collapsible";
-import { useState } from "react";
+import { FC, useState } from "react";
 import { FaArrowDown, FaArrowUp, FaPlus } from "react-icons/fa6";
 import Typography from "./ui/typography";
+import CreateChannelDialog from "./create-channel-dialog";
+import { User, Workspace } from "@/types/app";
 
-const InfoSection = () => {
+const InfoSection: FC<{ userData: User; currentWorkspaceData: Workspace }> = ({
+  userData,
+  currentWorkspaceData,
+}) => {
   const { color } = useColorPreferences();
   const [isChannelCollapsed, setIsChannelCollapsed] = useState(false);
   const [isDirectMsgCollapsed, setIsDirectMsgCollapsed] = useState(false);
+  const  [dialogOpen, setDialogOpen] = useState(false)
 
   let backGroundColor = "bg-primary-light";
   if (color === "green") {
@@ -38,6 +44,7 @@ const InfoSection = () => {
       )}
     >
       <div className="w-full flex flex-col gap-2 p-3">
+        {/* Channesl */}
         <div>
           <Collapsible
             open={isChannelCollapsed}
@@ -52,7 +59,7 @@ const InfoSection = () => {
                 <Typography variant="p" text="Channels" className="font-bold" />
               </CollapsibleTrigger>
               <div>
-                <FaPlus
+                <FaPlus onClick={() => setDialogOpen(true)}
                   size={30}
                   className={cn("cursor-pointer p-2 rounded-full", hoverBg)}
                 />
@@ -98,6 +105,7 @@ const InfoSection = () => {
           </Collapsible>
         </div>
 
+        {/* Direct Messages */}
         <div>
           <Collapsible
             open={isDirectMsgCollapsed}
@@ -129,12 +137,12 @@ const InfoSection = () => {
                 text="User Name 1"
                 className={cn("px-2 py-1 rounded-sm cursor-pointer", hoverBg)}
               />
-               <Typography
+              <Typography
                 variant="p"
                 text="User Name 1"
                 className={cn("px-2 py-1 rounded-sm cursor-pointer", hoverBg)}
               />
-               <Typography
+              <Typography
                 variant="p"
                 text="User Name 1"
                 className={cn("px-2 py-1 rounded-sm cursor-pointer", hoverBg)}
@@ -143,6 +151,13 @@ const InfoSection = () => {
           </Collapsible>
         </div>
       </div>
+
+      <CreateChannelDialog
+        setDialogOpen={setDialogOpen}
+        dialogOpen={dialogOpen}
+        userId={userData.id}
+        workspaceId={currentWorkspaceData.id}
+      />
     </div>
   );
 };
