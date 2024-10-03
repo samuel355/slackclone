@@ -16,18 +16,17 @@ const Workspace = async ({ params: { id } }: { params: { id: string } }) => {
   if (!userData) {
     return redirect("/auth");
   }
-  const [userWorkspacesData, userWorkspaceDataError] =
+  const [userWorkspacesData] =
     await getUserWorkspaceData(userData.workspaces!);
 
-  const [currentWorkspaceData, currentWorkspaceDataError] =
+  const [currentWorkspaceData] =
     await getCurrentWorkspaceData(id);
 
-  const userWorkspaceChannels = await getUserWorkSpaceChannels (
+  const userWorkspaceChannels = await getUserWorkSpaceChannels(
     currentWorkspaceData.id,
     userData.id
   );
 
- console.log(userWorkspaceChannels)
   return (
     <>
       <div className="hidden md:block">
@@ -39,6 +38,7 @@ const Workspace = async ({ params: { id } }: { params: { id: string } }) => {
         <InfoSection
           currentWorkspaceData={currentWorkspaceData}
           userData={userData}
+          userWorkskpaceChannels={userWorkspaceChannels}
         />
         Workspace
         <Typography text="Here we to again" variant="p" />

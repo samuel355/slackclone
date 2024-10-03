@@ -25,10 +25,10 @@ export type Workspace = {
 };
 
 export type Channel = {
-  id: string
-  members: string[] | null
-  name: string
-  regulators: string[] | null
-  user_id: string
-  workspace_id: string
+  id: string;
+  members: string[] | null;
+  name: string;
+  regulators: string[] | null;
+  user_id: string;
+  workspace_id: string;
 }
