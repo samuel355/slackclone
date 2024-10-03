@@ -1,4 +1,5 @@
 import { getUserData } from "@/actions/getUserData";
+import { getUserWorkSpaceChannels } from "@/actions/getUserWorkSpaceChannels";
 import {
   getCurrentWorkspaceData,
   getUserWorkspaceData,
@@ -21,6 +22,12 @@ const Workspace = async ({ params: { id } }: { params: { id: string } }) => {
   const [currentWorkspaceData, currentWorkspaceDataError] =
     await getCurrentWorkspaceData(id);
 
+  const userWorkspaceChannels = await getUserWorkSpaceChannels (
+    currentWorkspaceData.id,
+    userData.id
+  );
+
+ console.log(userWorkspaceChannels)
   return (
     <>
       <div className="hidden md:block">

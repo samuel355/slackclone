@@ -18,6 +18,7 @@ import { Input } from "./ui/input";
 import { Button } from "./ui/button";
 import { toast } from "sonner";
 import { CreateChannel } from "@/actions/CreateChannel";
+import { useRouter } from "next/navigation";
 
 const CreateChannelDialog: FC<{
   dialogOpen: boolean;
@@ -26,6 +27,8 @@ const CreateChannelDialog: FC<{
   userId: string;
 }> = ({ dialogOpen, setDialogOpen, workspaceId, userId }) => {
   const [isSubmitting, setIsSubmitting] = useState(false);
+  const router = useRouter()
+
   const formSchema = z.object({
     name: z
       .string()
@@ -48,6 +51,7 @@ const CreateChannelDialog: FC<{
         name, userId, workspaceId
       })
 
+      router.refresh();
       setIsSubmitting(false)
       setDialogOpen(false)
       form.reset()
