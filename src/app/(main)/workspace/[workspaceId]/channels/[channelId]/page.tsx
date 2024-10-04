@@ -4,6 +4,7 @@ import {
   getCurrentWorkspaceData,
   getUserWorkspaceData,
 } from "@/actions/WorkSpaces";
+import ChatHeader from "@/components/chat-header";
 import InfoSection from "@/components/info-section";
 import Sidebar from "@/components/sidebar";
 import Typography from "@/components/ui/typography";
@@ -28,6 +29,13 @@ const ChannelId = async ({
     currentWorkspaceData.id,
     userData.id
   );
+
+  const currentChannelData = userWorkspaceChannels.find(
+    (channel) => channel.id === channelId
+  );
+
+  if (!currentChannelData) return redirect("/");
+
   return (
     <>
       <div className="hidden md:block">
@@ -42,8 +50,8 @@ const ChannelId = async ({
           userWorkskpaceChannels={userWorkspaceChannels}
           currentChannelId={channelId}
         />
-        <div className="p-2">
-          <Typography text="Channel ID" variant="p" /> 
+        <div className="p-4 relative w-full overflow-hidden">
+          <ChatHeader title={currentChannelData.name} />
         </div>
       </div>
     </>
