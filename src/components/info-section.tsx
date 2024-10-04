@@ -12,16 +12,20 @@ import { FaArrowDown, FaArrowUp, FaPlus } from "react-icons/fa6";
 import Typography from "./ui/typography";
 import CreateChannelDialog from "./create-channel-dialog";
 import { Channel, User, Workspace } from "@/types/app";
+import { useRouter } from "next/navigation";
 
 const InfoSection: FC<{
   userData: User;
   currentWorkspaceData: Workspace;
   userWorkskpaceChannels: Channel[];
-}> = ({ userData, currentWorkspaceData, userWorkskpaceChannels }) => {
+  currentChannelId: string;
+}> = ({ userData, currentWorkspaceData, userWorkskpaceChannels, currentChannelId }) => {
   const { color } = useColorPreferences();
-  const [isChannelCollapsed, setIsChannelCollapsed] = useState(false);
-  const [isDirectMsgCollapsed, setIsDirectMsgCollapsed] = useState(false);
+  const [isChannelCollapsed, setIsChannelCollapsed] = useState(true);
+  const [isDirectMsgCollapsed, setIsDirectMsgCollapsed] = useState(true);
   const [dialogOpen, setDialogOpen] = useState(false);
+  const router = useRouter();
+  const [activeChannel, setActiveChannel] = useState(false);
 
   let backGroundColor = "bg-primary-light";
   if (color === "green") {
@@ -37,6 +41,18 @@ const InfoSection: FC<{
     hoverBg = "hover:bg-blue-700";
   }
 
+  let activeBg = "bg-primary-dark";
+  if (color === "green") {
+    activeBg = "bg-green-700";
+  } else if (color === "blue") {
+    activeBg = "bg-blue-700";
+  }
+
+  const navigateToChannel = (channelId: string) => {
+    const url = `/workspace/${currentWorkspaceData.id}/channels/${channelId}`;
+    router.push(url);
+    setActiveChannel(true);
+  };
   return (
     <div
       className={cn(
@@ -68,14 +84,22 @@ const InfoSection: FC<{
               </div>
             </div>
             <CollapsibleContent>
-              {userWorkskpaceChannels.map((channel) => (
-                <Typography
-                  key={channel.id}
-                  variant="p"
-                  text={`# ${channel.name}`}
-                  className={cn("px-2 py-1 rounded-sm cursor-pointer", hoverBg)}
-                />
-              ))}
+              {userWorkskpaceChannels.map((channel) => {
+                const selectedChannel = currentChannelId === channel.id
+                return (
+                  <Typography
+                    onClick={() => navigateToChannel(channel.id)}
+                    key={channel.id}
+                    variant="p"
+                    text={`# ${channel.name}`}
+                    className={cn(
+                      "px-2 py-1 rounded-sm cursor-pointer",
+                      hoverBg,
+                      selectedChannel && activeBg
+                    )}
+                  />
+                );
+              })}
             </CollapsibleContent>
           </Collapsible>
         </div>
