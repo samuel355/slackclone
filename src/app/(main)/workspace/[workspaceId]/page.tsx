@@ -30,6 +30,10 @@ const Workspace = async ({
     userData.id
   );
 
+  if(userWorkspaceChannels.length > 0){
+    redirect(`workspace/${workspaceId}/channels/${userWorkspaceChannels[0].id}`)
+  }
+
   return (
     <>
       <div className="hidden md:block">
@@ -38,7 +42,7 @@ const Workspace = async ({
           userData={userData}
           userWorkspacesData={userWorkspacesData as UserWorkspace[]}
         />
-        
+
         <InfoSection
           currentWorkspaceData={currentWorkspaceData}
           userData={userData}
