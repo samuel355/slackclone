@@ -31,7 +31,7 @@ const Workspace = async ({
   );
 
   if(userWorkspaceChannels.length > 0){
-    redirect(`workspace/${workspaceId}/channels/${userWorkspaceChannels[0].id}`)
+    redirect(`/workspace/${workspaceId}/channels/${userWorkspaceChannels[0].id}`)
   }
 
   return (
