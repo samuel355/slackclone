@@ -1,5 +1,5 @@
 "use client";
-import React from "react";
+import React, { useState } from "react";
 import { FiPlus } from "react-icons/fi";
 import { Button } from "./ui/button";
 import { Send } from "lucide-react";
@@ -9,11 +9,12 @@ import PlaceHolder from "@tiptap/extension-placeholder";
 import MenuBar from "./menu-bar";
 
 const TextEditor = () => {
+  const [content, setContent] = useState("");
   const editor = useEditor({
     extensions: [
       StarterKit,
       PlaceHolder.configure({
-        placeholder: `Write something to the channel `,
+        placeholder: `Write something in # channelName`,
       }),
     ],
   });
