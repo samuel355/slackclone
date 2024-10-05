@@ -69,7 +69,7 @@ const MenuBar = ({ editor }: { editor: Editor }) => {
         </PopoverTrigger>
         <PopoverContent className="w-fit p-0">
           <Picker
-            theme={resolvedTheme}
+            theme={resolvedTheme} 
             set="emojione"
             title="Pick an emoji"
             emojiSize={24}
