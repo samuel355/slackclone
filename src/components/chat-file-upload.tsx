@@ -18,11 +18,13 @@ import {
 } from "@/components/ui/form";
 import { File } from "lucide-react";
 import Typography from "./ui/typography";
+import { supabaseClient } from "@/supabase/supabaseClient";
 
 type ChatFileUploadProps = {
   userData: User;
   workspaceData: Workspace;
   channel: Channel;
+  toggleFileUploadModal: () => void
 };
 
 const formSchema = z.object({
@@ -41,6 +43,7 @@ const ChatFileUpload: FC<ChatFileUploadProps> = ({
   userData,
   workspaceData,
   channel,
+  toggleFileUploadModal
 }) => {
   const [isUploading, setIsUploading] = useState(false);
 
@@ -54,7 +57,52 @@ const ChatFileUpload: FC<ChatFileUploadProps> = ({
   const imageRef = form.register("file");
 
   async function handleFileUpload(values: z.infer<typeof formSchema>) {
-    console.log(values);
+    setIsUploading(true);
+    const uniqueId = uuid();
+    const file = values.file?.[0];
+    if (!file) return;
+
+    const supabase = supabaseClient;
+
+    let fileTypePrefix = "";
+    if (file.type.startsWith("image/")) {
+      fileTypePrefix = "img";
+    } else if (file.type === "application/pdf") {
+      fileTypePrefix = "pdf";
+    }
+
+    const fileName = `chat/${fileTypePrefix}-${uniqueId}`;
+    const { data, error } = await supabase.storage
+      .from("chat-files")
+      .upload(fileName, file, {
+        cacheControl: "3600",
+        upsert: false,
+      });
+
+    if (error) {
+      console.log("Error Uploading file: ", error);
+      return { error: error.message };
+    }
+
+    const { data: messageData, error: messageInsertError } = await supabase
+      .from("messages")
+      .insert({
+        file_url: data.path,
+        user_id: userData.id,
+        workspace_id: workspaceData.id,
+        channel_id: channel.id,
+        content: `File uploaded: ${file.name}`,
+      });
+
+    if (messageInsertError) {
+      console.log("Error inserting message: ", messageInsertError);
+      return { error: messageInsertError.message };
+    }
+
+    setIsUploading(false)
+    toggleFileUploadModal()
+    toast.success("File uploaded successfully");
+    form.reset()
   }
 
   return (
