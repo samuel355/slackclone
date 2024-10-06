@@ -1,5 +1,5 @@
 "use client";
-import React, { useState } from "react";
+import React, { FC, useState } from "react";
 import { FiPlus } from "react-icons/fi";
 import { Button } from "./ui/button";
 import { Send } from "lucide-react";
@@ -7,17 +7,55 @@ import { useEditor, EditorContent } from "@tiptap/react";
 import StarterKit from "@tiptap/starter-kit";
 import PlaceHolder from "@tiptap/extension-placeholder";
 import MenuBar from "./menu-bar";
+import axios from "axios";
+import ChannelId from "@/app/(main)/workspace/[workspaceId]/channels/[channelId]/page";
+import { Channel, Workspace } from "@/types/app";
 
-const TextEditor = () => {
+type TextEditorProps = {
+  apiUrl: string;
+  type: "channel" | "directMessage";
+  channel: Channel;
+  workspaceData: Workspace;
+};
+
+const TextEditor: FC<TextEditorProps> = ({
+  apiUrl,
+  type,
+  channel,
+  workspaceData,
+}) => {
   const [content, setContent] = useState("");
   const editor = useEditor({
     extensions: [
       StarterKit,
       PlaceHolder.configure({
-        placeholder: `Write something in # channelName`,
+        placeholder: `Message #${
+          type === "channel" ? channel.name : "username"
+        }`,
       }),
     ],
+    autofocus: true,
+    content,
+    onUpdate({ editor }) {
+      setContent(editor.getHTML());
+    },
   });
+
+  const handleSendMessage = async () => {
+    if (content.length < 2) return;
+
+    try {
+      await axios.post(
+        `${apiUrl}?channelId=${channel?.id}&workspaceId=${workspaceData.id}`,
+        { content }
+      );
+      setContent("");
+      editor?.commands.setContent("");
+    } catch (error) {
+      console.log(error);
+    }
+  };
+
   return (
     <div className="p-1 border dark:border-zinc-500 border-neutral-700 rounded-md relative overflow-hidden">
       <div className="sticky top-0 z-10">
@@ -33,7 +71,12 @@ const TextEditor = () => {
         <FiPlus size={28} className="dark:text-black" />
       </div>
 
-      <Button size={"sm"} className="absolute bottom-1 right-1">
+      <Button
+        onClick={handleSendMessage}
+        disabled={content.length < 2}
+        size={"sm"}
+        className="absolute bottom-1 right-1"
+      >
         <Send size={28} />
       </Button>
     </div>

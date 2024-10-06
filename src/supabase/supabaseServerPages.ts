@@ -1,16 +1,14 @@
+import type { NextApiRequest, NextApiResponse } from 'next';
 import {
-  type CookieOptions,
   createServerClient,
   serialize,
-} from "@supabase/ssr";
-import { cookies } from "next/headers";
-import type { NextApiRequest, NextApiResponse } from "next";
+  type CookieOptions,
+} from '@supabase/ssr';
 
 export default function supabaseServerClientPages(
   req: NextApiRequest,
   res: NextApiResponse
 ) {
-  const cookieStore = cookies();
   const supabase = createServerClient(
     process.env.NEXT_PUBLIC_SUPABASE_URL!,
     process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY!,
@@ -20,13 +18,14 @@ export default function supabaseServerClientPages(
           return req.cookies[name];
         },
         set(name: string, value: string, options: CookieOptions) {
-          res.appendHeader("Set-Cookie", serialize(name, value, options));
+          res.appendHeader('Set-Cookie', serialize(name, value, options));
         },
         remove(name: string, options: CookieOptions) {
-          res.appendHeader("Set-Cookie", serialize(name, "", options));
+          res.appendHeader('Set-Cookie', serialize(name, '', options));
         },
       },
     }
   );
+
   return supabase;
 }

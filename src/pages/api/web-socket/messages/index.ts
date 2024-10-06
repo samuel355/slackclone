@@ -11,6 +11,7 @@ export default async function handler(
 
   try {
     const userData = await getUserDataPages(req, res);
+
     if (!userData) {
       return res.status(401).json({ message: "Unauthorized" });
     }

@@ -61,7 +61,12 @@ const ChannelId = async ({
         </div>
 
         <div className="m-4">
-          <TextEditor />
+          <TextEditor
+            workspaceData={currentWorkspaceData}
+            apiUrl="/api/web-socket/messages"
+            type="channel"
+            channel={currentChannelData}
+          />
         </div>
       </div>
     </>
