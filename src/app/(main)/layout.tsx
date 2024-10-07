@@ -1,6 +1,7 @@
 import MainContent from "@/components/main-content";
 import { ColorPreferencesProvider } from "@/providers/ColorPreferences";
 import { ThemeProvider } from "@/providers/ThemeProvider";
+import { WebSocketProvider } from "@/providers/web-socket";
 import React, { FC, ReactNode } from "react";
 
 const MainLayout: FC<{ children: ReactNode }> = ({ children }) => {
@@ -11,9 +12,11 @@ const MainLayout: FC<{ children: ReactNode }> = ({ children }) => {
       enableSystem
       disableTransitionOnChange
     >
-      <ColorPreferencesProvider>
-        <MainContent>{children}</MainContent>
-      </ColorPreferencesProvider>
+      <WebSocketProvider>
+        <ColorPreferencesProvider>
+          <MainContent>{children}</MainContent>
+        </ColorPreferencesProvider>
+      </WebSocketProvider>
     </ThemeProvider>
   );
 };
