@@ -1,3 +1,8 @@
+import { NextApiResponse } from "next";
+import {Server as NetServer, Socket } from "net";
+import {Server as SocketIOServer} from 'socket.io'
+
+
 export type User = {
   avatar_url: string;
   channels: string[] | null;
@@ -44,3 +49,11 @@ export type Message = {
   user_id: string;
   workspace_id: string;
 };
+
+export type SocketIoApiResponse = NextApiResponse & {
+  socket: Socket & {
+    server: NetServer & {
+      io: SocketIOServer
+    }
+  }
+}
