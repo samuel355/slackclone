@@ -1,7 +1,7 @@
 import { getUserDataPages } from "@/actions/getUserData";
 import supabaseServerClientPages from "@/supabase/supabaseServerPages";
 import { SocketIoApiResponse } from "@/types/app";
-import { NextApiRequest} from "next";
+import { NextApiRequest } from "next";
 
 export default async function handler(
   req: NextApiRequest,
@@ -47,6 +47,7 @@ export default async function handler(
         file_url: fileUrl,
       })
       .select("*, user:user_id(*)")
+      .order("created_at", { ascending: true })
       .single();
 
     if (creatingMessageError) {
@@ -54,6 +55,12 @@ export default async function handler(
       return res.status(500).json({ message: "Internal server error" });
     }
 
+    //Emit message to connected device anytime message is sent
+
+    res?.socket?.server?.io?.emit(
+      `channel:${channelId}:channel-messages`,
+      data
+    );
     return res.status(201).json({ message: "message created: ", data });
   } catch (error) {
     console.log("MESSAGE CREATION ERROR: ", error);
