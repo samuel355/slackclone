@@ -23,8 +23,9 @@ import { supabaseClient } from "@/supabase/supabaseClient";
 type ChatFileUploadProps = {
   userData: User;
   workspaceData: Workspace;
-  channel: Channel;
-  toggleFileUploadModal: () => void
+  channel?: Channel;
+  recipientId?: string;
+  toggleFileUploadModal: () => void;
 };
 
 const formSchema = z.object({
@@ -43,7 +44,8 @@ const ChatFileUpload: FC<ChatFileUploadProps> = ({
   userData,
   workspaceData,
   channel,
-  toggleFileUploadModal
+  recipientId,
+  toggleFileUploadModal,
 }) => {
   const [isUploading, setIsUploading] = useState(false);
 
@@ -84,25 +86,41 @@ const ChatFileUpload: FC<ChatFileUploadProps> = ({
       return { error: error.message };
     }
 
-    const { data: messageData, error: messageInsertError } = await supabase
-      .from("messages")
-      .insert({
-        file_url: data.path,
-        user_id: userData.id,
-        workspace_id: workspaceData.id,
-        channel_id: channel.id,
-        content: `File uploaded: ${file.name}`,
-      });
+    let messageInsertError;
+    if (recipientId) {
+      const { data: directMessageData, error: directMessageInsertError } =
+        await supabase.from("direct_messages").insert({
+          file_url: data.path,
+          user_id: userData.id,
+          user_one: userData.id,
+          user_two: recipientId,
+          workspace_id: workspaceData.id,
+          channel_id: channel?.id,
+          content: `File uploaded: ${file.name}`,
+        });
+      messageInsertError = directMessageInsertError;
+    } else {
+      const { data: channelMessageDat, error: channelInsertError } = await supabase
+        .from("messages")
+        .insert({
+          file_url: data.path,
+          user_id: userData.id,
+          workspace_id: workspaceData.id,
+          channel_id: channel?.id,
+          content: `File uploaded: ${file.name}`,
+        });
+        messageInsertError = channelInsertError;
+    }
 
     if (messageInsertError) {
       console.log("Error inserting message: ", messageInsertError);
       return { error: messageInsertError.message };
     }
 
-    setIsUploading(false)
-    toggleFileUploadModal()
+    setIsUploading(false);
+    toggleFileUploadModal();
     toast.success("File uploaded successfully");
-    form.reset()
+    form.reset();
   }
 
   return (

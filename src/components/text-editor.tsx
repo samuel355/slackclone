@@ -118,6 +118,7 @@ const TextEditor: FC<TextEditorProps> = ({
 
           <ChatFileUpload
             userData={userData}
+            recipientId={recipientId}
             workspaceData={workspaceData}
             channel={channel}
             toggleFileUploadModal={toggleFileUploadModal}
