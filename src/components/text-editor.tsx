@@ -21,10 +21,11 @@ import ChatFileUpload from "./chat-file-upload";
 
 type TextEditorProps = {
   apiUrl: string;
-  type: "channel" | "directMessage";
-  channel: Channel;
+  type: "Channel" | "DirectMessage";
+  channel?: Channel;
   workspaceData: Workspace;
   userData: User;
+  recipientId?: string;
 };
 
 const TextEditor: FC<TextEditorProps> = ({
@@ -33,6 +34,7 @@ const TextEditor: FC<TextEditorProps> = ({
   channel,
   workspaceData,
   userData,
+  recipientId,
 }) => {
   const [content, setContent] = useState("");
   const [fileUploadModal, setFileUploadModal] = useState(false);
@@ -44,9 +46,7 @@ const TextEditor: FC<TextEditorProps> = ({
     extensions: [
       StarterKit,
       PlaceHolder.configure({
-        placeholder: `Message #${
-          type === "channel" ? channel.name : "username"
-        }`,
+        placeholder: `Message #${channel?.name ?? "Username"}`,
       }),
     ],
     autofocus: true,
@@ -60,10 +60,18 @@ const TextEditor: FC<TextEditorProps> = ({
     if (content.length < 2) return;
 
     try {
-      await axios.post(
-        `${apiUrl}?channelId=${channel?.id}&workspaceId=${workspaceData.id}`,
-        { content }
-      );
+      const payload = {
+        content,
+        type,
+      };
+      let endpoint = apiUrl;
+
+      if (type === "Channel" && channel) {
+        endpoint += `?channelId=${channel.id}&workspaceId=${workspaceData.id}`;
+      } else {
+        endpoint += `?recipientId=${recipientId}&workspaceId=${workspaceData.id}`;
+      }
+      await axios.post(endpoint, payload);
       setContent("");
       editor?.commands.setContent("");
     } catch (error) {
@@ -120,4 +128,4 @@ const TextEditor: FC<TextEditorProps> = ({
   );
 };
 
-export default TextEditor;
+export default TextEditor; 
