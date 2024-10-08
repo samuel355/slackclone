@@ -1,4 +1,4 @@
-"use client";
+
 import { getUserData } from "@/actions/getUserData";
 import { getUserWorkSpaceChannels } from "@/actions/getUserWorkSpaceChannels";
 import {
@@ -18,6 +18,7 @@ import {
 } from "@/types/app";
 import { redirect } from "next/navigation";
 import { FC } from "react";
+import ChatMessages from "./chat-messages";
 
 type ChatGroupProps = {
   type: "Channel" | "DirectMessage";
@@ -70,8 +71,21 @@ const ChatGroup: FC<ChatGroupProps> = async ({
         />
         <div className="p-4 relative w-full overflow-hidden">
           <ChatHeader title={headerTitle} chatId={chatId} userData={userData} />
+
           <div className="mt-10">
-            <Typography text="Chat Content" variant="h4" />
+            <ChatMessages
+              userData={userData}
+              name={currentChannelData?.name ?? "username"}
+              workspaceData={currentWorkspaceData}
+              chatId={chatId}
+              socketUrl={socketUrl}
+              type={type}
+              socketQuery={socketQuery}
+              paramkey={paramkey}
+              paramValue={paramValue}
+              channelData={currentChannelData}
+              apiUrl={apiUrl}
+            />
           </div>
         </div>
       </div>

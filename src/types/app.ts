@@ -38,7 +38,7 @@ export type Channel = {
   workspace_id: string;
 };
 
-export type Message = {
+export type Messages = {
   channel_id: string;
   content: string | null;
   created_at: string;
@@ -57,3 +57,6 @@ export type SocketIoApiResponse = NextApiResponse & {
     }
   }
 }
+
+
+export type MessageWithUser = Messages & {user: User}
