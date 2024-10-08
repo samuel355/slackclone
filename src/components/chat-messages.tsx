@@ -2,6 +2,7 @@
 import { useChatFetcher } from "@/hooks/use-chat-fetcher";
 import { Channel, User, Workspace } from "@/types/app";
 import { FC } from "react";
+import DotAnimatedLoader from "./dot-animated-loader";
 
 type ChatMessagesProps = {
   userData: User;
@@ -39,6 +40,8 @@ const ChatMessages: FC<ChatMessagesProps> = ({
     paramValue,
     pageSize: 10,
   });
+  
+  if (status === "pending") return <DotAnimatedLoader />
   return <div>Messages t</div>;
 };
 
