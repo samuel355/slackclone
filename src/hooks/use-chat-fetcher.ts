@@ -1,22 +1,23 @@
-import { useSocket } from "@/providers/web-socket";
-import { MessageWithUser } from "@/types/app";
-import { useInfiniteQuery } from "@tanstack/react-query";
-import axios from "axios";
+import { useInfiniteQuery } from '@tanstack/react-query';
+
+import { useSocket } from '@/providers/web-socket';
+import { MessageWithUser } from '@/types/app';
+import axios from 'axios';
 
 type ChatFetcherProps = {
   queryKey: string;
   apiUrl: string;
-  paramkey: "channelId" | "recipientId";
+  paramkey: 'channelId' | 'recipientId';
   paramValue: string;
   pageSize: number;
 };
 
 export const useChatFetcher = ({
-  queryKey,
   apiUrl,
-  paramValue,
-  paramkey,
+  queryKey,
   pageSize,
+  paramkey,
+  paramValue,
 }: ChatFetcherProps) => {
   const { isConnected } = useSocket();
 
@@ -25,11 +26,11 @@ export const useChatFetcher = ({
   }: any): Promise<{ data: MessageWithUser[] }> => {
     const url = `${apiUrl}?${paramkey}=${encodeURIComponent(
       paramValue
-    )}&page=${pageParam}&limit=${pageSize}`;
-    
-    const {data} = await axios.get<MessageWithUser>(url)
+    )}&page=${pageParam}&size=${pageSize}`;
 
-    return data as any
+    const { data } = await axios.get<MessageWithUser>(url);
+
+    return data as any;
   };
 
   return useInfiniteQuery<{ data: MessageWithUser[] }, Error>({
