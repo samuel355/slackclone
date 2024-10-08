@@ -26,7 +26,7 @@ type ChatGroupProps = {
   headerTitle: string;
   chatId: string;
   socketQuery: Record<string, string>;
-  paramkey: "Channel" | "recipientId";
+  paramkey: "channelId" | "recipientId";
   paramValue: string;
   userData: User;
   currentWorkspaceData: Workspace;
@@ -64,10 +64,12 @@ const ChatGroup: FC<ChatGroupProps> = async ({
           currentWorkspaceData={currentWorkspaceData}
           userData={userData}
           userWorkskpaceChannels={userWorkspaceChannels}
-          currentChannelId={channelId}
+          currentChannelId={
+            type === "Channel" ? currentChannelData?.id : undefined
+          }
         />
         <div className="p-4 relative w-full overflow-hidden">
-          <ChatHeader title={headerTitle} chatId={chatId} userData ={userData} />
+          <ChatHeader title={headerTitle} chatId={chatId} userData={userData} />
           <div className="mt-10">
             <Typography text="Chat Content" variant="h4" />
           </div>
@@ -81,7 +83,7 @@ const ChatGroup: FC<ChatGroupProps> = async ({
           type={type}
           channel={currentChannelData}
           userData={userData}
-          recipientId={type === 'DirectMessage' ? chatId: undefined}
+          recipientId={type === "DirectMessage" ? chatId : undefined}
         />
       </div>
     </>

@@ -18,7 +18,7 @@ const InfoSection: FC<{
   userData: User;
   currentWorkspaceData: Workspace;
   userWorkskpaceChannels: Channel[];
-  currentChannelId: string;
+  currentChannelId: string | undefined;
 }> = ({ userData, currentWorkspaceData, userWorkskpaceChannels, currentChannelId }) => {
   const { color } = useColorPreferences();
   const [isChannelCollapsed, setIsChannelCollapsed] = useState(true);
