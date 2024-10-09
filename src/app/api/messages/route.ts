@@ -43,7 +43,6 @@ export async function GET(req: Request) {
       return new Response('Bad Request', { status: 400 });
     }
 
-    console.log(data)
     return NextResponse.json({ data });
   } catch (error) {
     console.log('SERVER ERROR: ', error);

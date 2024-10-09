@@ -4,7 +4,10 @@ import { Channel, User, Workspace } from "@/types/app";
 import { FC } from "react";
 import DotAnimatedLoader from "./dot-animated-loader";
 import Typography from "./ui/typography";
+import ChatItem from "./chat-item";
+import { format } from "date-fns";
 
+const DATE_FORMAT = 'd MMM yyy, HH:mm'
 type ChatMessagesProps = {
   userData: User;
   name: string;
@@ -51,9 +54,19 @@ const ChatMessages: FC<ChatMessagesProps> = ({
   const renderMessages = () =>
     data.pages.map((page) =>
       page.data.map((message) => (
-        <div key={message.id} className="">
-          {message ? message.content : "No message yet"}
-        </div>
+        <ChatItem
+          key={message.id}
+          currentUser={userData}
+          user={message.user}
+          content={message.content}
+          fileUrl={message.file_url}
+          deleted ={message.is_deleted}
+          id={message.id}
+          timestamp={format(new Date (message.created_at), DATE_FORMAT)}
+          isUpdated={message.updated_at !== message.created_at }
+          socketQuery={socketQuery}
+          socketUrl={socketUrl}
+        />
       ))
     );
   return (
