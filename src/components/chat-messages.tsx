@@ -6,8 +6,9 @@ import DotAnimatedLoader from "./dot-animated-loader";
 import Typography from "./ui/typography";
 import ChatItem from "./chat-item";
 import { format } from "date-fns";
+import { useChatSocketConnection } from "@/hooks/use-chat-socket-connection";
 
-const DATE_FORMAT = 'd MMM yyy, HH:mm'
+const DATE_FORMAT = "d MMM yyy, HH:mm";
 type ChatMessagesProps = {
   userData: User;
   name: string;
@@ -46,6 +47,16 @@ const ChatMessages: FC<ChatMessagesProps> = ({
       pageSize: 10,
     });
 
+  useChatSocketConnection({
+    queryKey,
+    addKey:
+      type === "Channel"
+        ? `${queryKey}:channel-messages`
+        : `direct_messages:post`,
+    updateKey: type === "Channel" ? `${queryKey}:channel-messages:update` : `direct_messages:update`,
+    paramValue,
+  });
+
   if (status === "pending") return <DotAnimatedLoader />;
   if (status === "error") {
     return <div>Error Occured</div>;
@@ -60,10 +71,10 @@ const ChatMessages: FC<ChatMessagesProps> = ({
           user={message.user}
           content={message.content}
           fileUrl={message.file_url}
-          deleted ={message.is_deleted}
+          deleted={message.is_deleted}
           id={message.id}
-          timestamp={format(new Date (message.created_at), DATE_FORMAT)}
-          isUpdated={message.updated_at !== message.created_at }
+          timestamp={format(new Date(message.created_at), DATE_FORMAT)}
+          isUpdated={message.updated_at !== message.created_at}
           socketQuery={socketQuery}
           socketUrl={socketUrl}
         />
