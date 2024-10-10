@@ -1,82 +1,88 @@
-import { getUserDataPages } from "@/actions/getUserData";
-import supabaseServerClientPages from "@/supabase/supabaseServerPages";
-import { SocketIoApiResponse } from "@/types/app";
-import { SupabaseClient } from "@supabase/supabase-js";
-import { NextApiRequest } from "next";
+import { NextApiRequest } from 'next';
+
+import { SupabaseClient } from '@supabase/supabase-js';
+import { getUserDataPages } from '@/actions/getUserData';
+import { SocketIoApiResponse } from '@/types/app';
+import supabaseServerClientPages from '@/supabase/supabaseServerPages';
 
 export default async function handler(
   req: NextApiRequest,
   res: SocketIoApiResponse
 ) {
-  if (!["DELETE", "PATCH"].includes(req.method!)) {
-    return res.status(405).json({ message: "Method is not allowed" });
+  if (!['DELETE', 'PATCH'].includes(req.method!)) {
+    return res.status(405).json({ error: 'Method not allowed' });
   }
 
   try {
     const userData = await getUserDataPages(req, res);
 
     if (!userData) {
-      return res.status(401).json({ message: "Unauthorized" });
+      return res.status(401).json({ error: 'Unauthorized' });
     }
+
     const { messageId, channelId, workspaceId } = req.query as Record<
       string,
       string
     >;
+
     if (!messageId || !channelId || !workspaceId) {
-      return res.status(400).json({ error: "Invalid request" });
+      return res.status(400).json({ error: 'Invalid request' });
     }
+
     const { content } = req.body;
+
     const supabase = supabaseServerClientPages(req, res);
+
     const { data: messageData, error } = await supabase
-      .from("messages")
-      .select("*, user:user_id(*)")
-      .eq("id", messageId)
+      .from('messages')
+      .select('*, user: user_id (*)')
+      .eq('id', messageId)
       .single();
 
     if (error || !messageData) {
-      return res.status(404).json({ error: "Message not found" });
+      return res.status(404).json({ error: 'Message not found' });
     }
 
+    // type in ('user', 'admin', 'regulator')
     const isMessageOwner = messageData.user_id === userData.id;
-    //type in ('user', 'admin', 'regulator')
-    const isAdmin = userData.type === "admin";
-    const isRegulator = userData.type === "regulator";
+    const isAdmin = userData.type === 'admin';
+    const isRegulator = userData.type === 'regulator';
+
     const canEditMessage = isMessageOwner || !messageData.is_deleted;
 
     if (!canEditMessage) {
-      return res.status(403).json({ error: "Forbidden" });
+      return res.status(403).json({ error: 'Forbidden' });
     }
 
-    if (req.method === "PATCH") {
+    if (req.method === 'PATCH') {
       if (!isMessageOwner) {
-        return res.status(403).json({ error: "Forbidden" });
+        return res.status(403).json({ error: 'Forbidden' });
       }
+
       await updateMessageContent(supabase, messageId, content);
-    } else if (req.method === "DELETE") {
-      await deleteMessage(supabase, messageId);
-    } else {
-      return res.status(403).json({ error: "Something went wront" });
+    } else if (req.method === 'DELETE') {
+      await deleteMessaeg(supabase, messageId);
     }
 
-    const { data: updatedMessage, error: messageError } = (await supabase
-      .from("messages")
-      .select("*, user:user_id(*)")
-      .order("created_at", { ascending: true })
-      .eq("id", messageId)
-      .single()) as Record<string, any>;
+    const { data: updatedMessage, error: messageError } = await supabase
+      .from('messages')
+      .select('*, user: user_id (*)')
+      .order('created_at', { ascending: true })
+      .eq('id', messageId)
+      .single();
 
     if (messageError || !updatedMessage) {
-      return res.status(404).json({ error: "message not found" });
+      return res.status(404).json({ error: 'Message not found' });
     }
 
     res?.socket?.server?.io?.emit(
-      `channel: ${channelId}:channel-message:update`,
+      `channel:${channelId}:channel-messages:update`,
       updatedMessage
     );
-    res.status(200).json({ message: updatedMessage });
+    return res.status(200).json({ message: updatedMessage });
   } catch (error) {
-    console.log("MESSAGE ID ERROR", error);
-    return res.status(500).json({ error: "Internal server error" });
+    console.log('MESSAGE ID ERROR', error);
+    return res.status(500).json({ error: 'Internal Server Error' });
   }
 }
 
@@ -86,26 +92,25 @@ async function updateMessageContent(
   content: string
 ) {
   await supabase
-    .from("message")
+    .from('messages')
     .update({
       content,
       updated_at: new Date().toISOString(),
     })
-    .eq("id", messageId)
-    .select("*, user: user_id(*)")
+    .eq('id', messageId)
+    .select('*, user: user_id (*)')
     .single();
 }
 
-async function deleteMessage(supabase: SupabaseClient, messageId: string) {
+async function deleteMessaeg(supabase: SupabaseClient, messageId: string) {
   await supabase
-    .from("message")
+    .from('messages')
     .update({
-      content: "This message has been deleted",
-      updated_at: new Date().toISOString(),
+      content: 'This message has been deleted',
       file_url: null,
       is_deleted: true,
     })
-    .eq("id", messageId)
-    .select("*, user: user_id(*)")
+    .eq('id', messageId)
+    .select('*, user: user_id (*)')
     .single();
 }

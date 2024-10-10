@@ -25,6 +25,7 @@ import {
   DialogTitle,
   DialogTrigger,
 } from "./ui/dialog";
+import axios from "axios";
 
 type ChatItemProps = {
   id: string;
@@ -62,6 +63,7 @@ const ChatItem: FC<ChatItemProps> = ({
   const { publicUrl, fileType, loading, error } = useChatFile(fileUrl!);
   const [isEditing, setIsEditing] = useState(false);
   const [openDeleteDialog, setOpenDeleteDialog] = useState(false);
+  const [isDeleting, setIsDeleting] = useState(false)
 
   const form = useForm<z.infer<typeof formSchema>>({
     resolver: zodResolver(formSchema),
@@ -93,10 +95,6 @@ const ChatItem: FC<ChatItemProps> = ({
 
     return () => window.removeEventListener("keydown", handleKeyDown);
   }, []);
-
-  const handleDelete = async () => {
-    //Handle delete
-  };
 
   const FilePreview = () => (
     <>
@@ -135,10 +133,21 @@ const ChatItem: FC<ChatItemProps> = ({
     </>
   );
 
-  const onSubmit = async (data: z.infer<typeof formSchema>) => {
-    console.log(data);
+  const handleDelete = async () => {
+    setIsDeleting(true);
+    const url = `${socketUrl}/${id}?${new URLSearchParams(socketQuery)}`;
+    await axios.delete(url);
+    setIsDeleting(false);
+    setOpenDeleteDialog(false);
   };
-  
+
+  const onSubmit = async ({ content }: z.infer<typeof formSchema>) => {
+    const url = `${socketUrl}/${id}?${new URLSearchParams(socketQuery)}`;
+    await axios.patch(url, { content });
+    setIsEditing(false);
+    form.reset();
+  };
+
   const EditableContent = () =>
     isEditing ? (
       <Form {...form}>
