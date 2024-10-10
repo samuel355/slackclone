@@ -25,7 +25,7 @@ export default async function handler(
     if (!messageId || !channelId || !workspaceId) {
       return res.status(400).json({ error: "Invalid request" });
     }
-
+    const { content } = req.body;
     const supabase = supabaseServerClientPages(req, res);
     const { data: messageData, error } = await supabase
       .from("messages")
@@ -51,10 +51,29 @@ export default async function handler(
       if (!isMessageOwner) {
         return res.status(403).json({ error: "Forbidden" });
       }
+      await updateMessageContent(supabase, messageId, content);
     } else if (req.method === "DELETE") {
+      await deleteMessage(supabase, messageId);
     } else {
       return res.status(403).json({ error: "Something went wront" });
     }
+
+    const { data: updatedMessage, error: messageError } = (await supabase
+      .from("messages")
+      .select("*, user:user_id(*)")
+      .order("created_at", { ascending: true })
+      .eq("id", messageId)
+      .single()) as Record<string, any>;
+
+    if (messageError || !updatedMessage) {
+      return res.status(404).json({ error: "message not found" });
+    }
+
+    res?.socket?.server?.io?.emit(
+      `channel: ${channelId}:channel-message:update`,
+      updatedMessage
+    );
+    res.status(200).json({ message: updatedMessage });
   } catch (error) {
     console.log("MESSAGE ID ERROR", error);
     return res.status(500).json({ error: "Internal server error" });
@@ -77,17 +96,14 @@ async function updateMessageContent(
     .single();
 }
 
-async function deleteMessage(
-  supabase: SupabaseClient,
-  messageId: string
-) {
+async function deleteMessage(supabase: SupabaseClient, messageId: string) {
   await supabase
     .from("message")
     .update({
       content: "This message has been deleted",
       updated_at: new Date().toISOString(),
       file_url: null,
-      is_deleted: true
+      is_deleted: true,
     })
     .eq("id", messageId)
     .select("*, user: user_id(*)")
