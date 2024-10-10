@@ -138,6 +138,7 @@ const ChatItem: FC<ChatItemProps> = ({
   const onSubmit = async (data: z.infer<typeof formSchema>) => {
     console.log(data);
   };
+  
   const EditableContent = () =>
     isEditing ? (
       <Form {...form}>
