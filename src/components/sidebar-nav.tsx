@@ -14,6 +14,8 @@ import { useRouter } from "next/navigation";
 import ProgressBar from "./progress-bar";
 import { cn } from "@/lib/utils";
 import { useColorPreferences } from "@/providers/ColorPreferences";
+import { Copy } from "lucide-react";
+import { toast } from "sonner";
 
 type sidebarNavProps = {
   userWorkspacesData: Workspace[];
@@ -26,7 +28,7 @@ const SidebarNav: FC<sidebarNavProps> = ({
 }) => {
   const router = useRouter();
   const [switchingWorkspace, setSwitchingWorkpace] = useState(false);
-  const {color} = useColorPreferences()
+  const { color } = useColorPreferences();
 
   const switchWorkspace = (id: string) => {
     setSwitchingWorkpace(true);
@@ -42,13 +44,21 @@ const SidebarNav: FC<sidebarNavProps> = ({
     backGroundColor = "bg-blue-700";
   }
 
+  const copyInviteLink = (inviteCode: string) => {
+    const currentDomain = window.location.origin;
+    navigator.clipboard.writeText(`
+      ${currentDomain}/create-workspace/${inviteCode}`)
+
+    toast.success('Invite link copied to clipboard')
+  };
+
   return (
     <nav>
       <ul className="flex flex-col space-y-4">
         <li>
           <div className="cursor-pointer items-center text-white mb-4 w-10 h-10 rounded-lg overflow-hidden">
             <Popover>
-              <PopoverTrigger >
+              <PopoverTrigger>
                 <Avatar className="border border-gray-300">
                   {" "}
                   <AvatarImage
@@ -65,7 +75,7 @@ const SidebarNav: FC<sidebarNavProps> = ({
                 </Avatar>
               </PopoverTrigger>
               <PopoverContent className="p-0" side="bottom">
-                <Card className="w-[350px] border-0">
+                <Card className="w-[320px] border-0">
                   <CardContent className="flex p-0 flex-col">
                     {switchingWorkspace ? (
                       <div className="m-2">
@@ -81,11 +91,13 @@ const SidebarNav: FC<sidebarNavProps> = ({
                             key={workspace.id}
                             className={cn(
                               isActive && `${backGroundColor} text-white`,
-                              "opacity-75 px-2 py-1 flex gap-2 cursor-pointer"
+                              "opacity-75 px-2 py-1 flex gap-2 cursor-pointer w-full items-center"
                             )}
-                            onClick={() => switchWorkspace(workspace.id)}
+                            onClick={() =>
+                              !isActive && switchWorkspace(workspace.id)
+                            }
                           >
-                            <Avatar>
+                            <Avatar className="border border-white">
                               <AvatarImage
                                 src={workspace.image_url || ""}
                                 alt={workspace.name || "Workspace image"}
@@ -104,17 +116,25 @@ const SidebarNav: FC<sidebarNavProps> = ({
                               />
                             </Avatar>
 
-                            <div>
+                            <div className="flex justify-between items-center w-full">
                               <Typography
                                 variant="p"
                                 text={workspace.name || ""}
-                                className="text-sm"
+                                className="text-sm font-semibold"
                               />
-                              <Typography
-                                variant="p"
-                                text={workspace.invite_code || ""}
-                                className="text-xs"
-                              />
+                              <div
+                                className="flex items-center gap-x-2"
+                                onClick={() =>
+                                  copyInviteLink(workspace.invite_code!)
+                                }
+                              >
+                                <Typography
+                                  variant="p"
+                                  text={`Copy Invite Link`}
+                                  className="text-xs hover:underline"
+                                />
+                                <Copy size={15} />
+                              </div>
                             </div>
                           </div>
                         );
